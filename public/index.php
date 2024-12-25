@@ -81,6 +81,29 @@ function handleOAuth() {
 // Callback handling function
 function handleCallback() {
     try {
+        // Log the callback data
+        $logData = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'GET' => $_GET,
+            'POST' => $_POST,
+            'SERVER' => [
+                'REMOTE_ADDR' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                'HTTP_USER_AGENT' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
+                'REQUEST_METHOD' => $_SERVER['REQUEST_METHOD'] ?? 'unknown'
+            ]
+        ];
+        
+        $logDir = __DIR__ . '/../storage/logs';
+        if (!is_dir($logDir)) {
+            mkdir($logDir, 0755, true);
+        }
+        
+        file_put_contents(
+            $logDir . '/callback.log',
+            json_encode($logData, JSON_PRETTY_PRINT) . "\n",
+            FILE_APPEND
+        );
+
         $oauth = new CloverOAuth(...array_values(Config::getOAuth()));
 
         if (isset($_GET['code'])) {

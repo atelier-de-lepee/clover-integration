@@ -33,3 +33,6 @@ Thumbs.db
 # Storage tokens
 /storage/tokens/*
 !storage/tokens/.gitkeep 
+/storage/logs/*
+!storage/logs/.gitkeep 
+
