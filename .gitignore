@@ -29,3 +29,7 @@ Thumbs.db
 
 # PHP files
 *.php~ 
+
+# Storage tokens
+/storage/tokens/*
+!storage/tokens/.gitkeep 

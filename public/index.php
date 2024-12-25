@@ -102,13 +102,17 @@ function handleCallback() {
 // Add new function to handle token refresh
 function handleTokenRefresh() {
     try {
-        if (!isset($_SESSION['refresh_token'])) {
+        $storageDir = __DIR__ . '/../storage/tokens';
+        $refreshTokenPath = $storageDir . '/refresh_token.txt';
+        
+        if (!file_exists($refreshTokenPath)) {
             throw new Exception("No refresh token available");
         }
 
+        $refreshToken = file_get_contents($refreshTokenPath);
         $config = Config::getOAuth();
         $tokenManager = new TokenManager($config['client_id'], $config['is_sandbox']);
-        $newTokens = $tokenManager->refreshToken($_SESSION['refresh_token']);
+        $newTokens = $tokenManager->refreshToken($refreshToken);
         storeTokens($newTokens);
 
         echo json_encode([
@@ -126,7 +130,15 @@ function handleTokenRefresh() {
 
 // New helper function to store tokens
 function storeTokens($tokens) {
-    $_SESSION['access_token'] = $tokens['access_token'];
-    $_SESSION['refresh_token'] = $tokens['refresh_token'];
-    $_SESSION['access_token_expiration'] = $tokens['access_token_expiration'];
+    $storageDir = __DIR__ . '/../storage/tokens';
+    
+    // Ensure storage directory exists
+    if (!is_dir($storageDir)) {
+        mkdir($storageDir, 0755, true);
+    }
+    
+    // Store tokens in separate files
+    file_put_contents($storageDir . '/access_token.txt', $tokens['access_token']);
+    file_put_contents($storageDir . '/refresh_token.txt', $tokens['refresh_token']);
+    file_put_contents($storageDir . '/expiration.txt', $tokens['access_token_expiration']);
 }
