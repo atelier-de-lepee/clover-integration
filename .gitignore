@@ -1,0 +1,31 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Composer
+/vendor/
+composer.phar
+
+# IDE and editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Cache and logs
+/var/
+/logs/
+*.log
+*.cache
+
+# Build and dist directories
+/build/
+/dist/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# PHP files
+*.php~ 
