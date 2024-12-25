@@ -12,13 +12,26 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-// Replace the constant array with environment variables
-const OAUTH_CONFIG = [
-    'client_id' => $_ENV['CLOVER_CLIENT_ID'],
-    'client_secret' => $_ENV['CLOVER_CLIENT_SECRET'],
-    'redirect_uri' => $_ENV['CLOVER_REDIRECT_URI'],
-    'is_sandbox' => $_ENV['CLOVER_IS_SANDBOX']
-];
+// Add Config class
+class Config {
+    private static array $oauth;
+
+    public static function init(): void {
+        self::$oauth = [
+            'client_id' => $_ENV['CLOVER_CLIENT_ID'],
+            'client_secret' => $_ENV['CLOVER_CLIENT_SECRET'],
+            'redirect_uri' => $_ENV['CLOVER_REDIRECT_URI'],
+            'is_sandbox' => $_ENV['CLOVER_IS_SANDBOX']
+        ];
+    }
+
+    public static function getOAuth(): array {
+        return self::$oauth;
+    }
+}
+
+// Initialize config after loading env
+Config::init();
 
 // Get the request URI and remove query string
 $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -51,7 +64,7 @@ switch ($request_uri) {
 // OAuth handling function
 function handleOAuth() {
     try {
-        $oauth = new CloverOAuth(...array_values(OAUTH_CONFIG));
+        $oauth = new CloverOAuth(...array_values(Config::getOAuth()));
         $authUrl = $oauth->getAuthorizationUrl();
         header("Location: $authUrl");
         exit;
@@ -63,7 +76,7 @@ function handleOAuth() {
 // Callback handling function
 function handleCallback() {
     try {
-        $oauth = new CloverOAuth(...array_values(OAUTH_CONFIG));
+        $oauth = new CloverOAuth(...array_values(Config::getOAuth()));
 
         if (isset($_GET['code'])) {
             $tokens = $oauth->getAccessToken($_GET['code']);
@@ -88,7 +101,8 @@ function handleTokenRefresh() {
             throw new Exception("No refresh token available");
         }
 
-        $tokenManager = new TokenManager(OAUTH_CONFIG['client_id'], OAUTH_CONFIG['is_sandbox']);
+        $config = Config::getOAuth();
+        $tokenManager = new TokenManager($config['client_id'], $config['is_sandbox']);
         $newTokens = $tokenManager->refreshToken($_SESSION['refresh_token']);
         storeTokens($newTokens);
 
