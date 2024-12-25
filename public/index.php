@@ -12,12 +12,12 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-// Replace the constant with environment variables
+// Replace the constant array with environment variables
 const OAUTH_CONFIG = [
-    'client_id' => CLOVER_CLIENT_ID,
-    'client_secret' => CLOVER_CLIENT_SECRET,
-    'redirect_uri' => CLOVER_REDIRECT_URI,
-    'is_sandbox' => CLOVER_IS_SANDBOX
+    'client_id' => $_ENV['CLOVER_CLIENT_ID'],
+    'client_secret' => $_ENV['CLOVER_CLIENT_SECRET'],
+    'redirect_uri' => $_ENV['CLOVER_REDIRECT_URI'],
+    'is_sandbox' => $_ENV['CLOVER_IS_SANDBOX']
 ];
 
 // Get the request URI and remove query string
