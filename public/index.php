@@ -40,7 +40,12 @@ $request_uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 switch ($request_uri) {
     case '/':
         // Home page
-        echo "Welcome to the Clover OAuth App";
+        echo "<h1>Welcome to the Clover OAuth App</h1>";
+        echo "<ul>";
+        echo "<li><a href='/auth'>Start OAuth Flow (/auth)</a></li>";
+        echo "<li>OAuth Callback (/callback)</li>";
+        echo "<li><a href='/refresh'>Refresh Token (/refresh)</a></li>";
+        echo "</ul>";
         break;
 
     case '/auth':
